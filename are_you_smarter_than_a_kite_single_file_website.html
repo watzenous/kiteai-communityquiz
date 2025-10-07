@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Are You Smarter Than a Kite?</title>
+    <style>
+      :root {
+        --bg: #0d1116; /* soft black */
+        --card: #111823; /* deep blue/black */
+        --muted: #7c8aa0; /* slate */
+        --text: #e9ecf1; /* off-white */
+        --brand: #c6a46a; /* beige/bronze */
+        --accent: #57d1c9; /* turquoise glow */
+        --danger: #ff6b6b;
+        --success: #7ee787;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Inter,
+          'Helvetica Neue', Arial, Noto Sans, 'Apple Color Emoji',
+          'Segoe UI Emoji';
+        color: var(--text);
+        background: radial-gradient(
+            1200px 800px at 70% -20%,
+            #14202b 0%,
+            transparent 60%
+          ),
+          radial-gradient(900px 600px at -10% 30%, #0f1b23 0%, transparent 60%),
+          var(--bg);
+      }
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      .container {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+
+      /* Cards */
+      .card {
+        background: linear-gradient(
+            180deg,
+            rgba(198, 164, 106, 0.07),
+            rgba(198, 164, 106, 0)
+          ),
+          var(--card);
+        border: 1px solid rgba(198, 164, 106, 0.15);
+        border-radius: 18px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        padding: 24px;
+      }
+
+      /* Header / Hero */
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .kite {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+      }
+      .kite img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        scale: 2;
+      }
+      h1 {
+        font-weight: 800;
+        letter-spacing: 0.3px;
+        margin: 0;
+      }
+      .tag {
+        color: var(--muted);
+      }
+
+      /* Layout */
+      .grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 20px;
+      }
+      @media (max-width: 900px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 18px;
+        border-radius: 12px;
+        border: 1px solid rgba(198, 164, 106, 0.35);
+        background: #ffff;
+        color: #1a1a1a;
+        font-weight: 700;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.15);
+        cursor: pointer;
+      }
+      .btn span {
+        color: #231a0f;
+      }
+      .btn:hover {
+        filter: brightness(1.05);
+      }
+      .btn.secondary {
+        background: transparent;
+        color: var(--text);
+        border-color: rgba(198, 164, 106, 0.25);
+      }
+
+      .hero {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        border-radius: 18px;
+        border: 1px dashed rgba(87, 209, 201, 0.2);
+      }
+      .hero-title {
+        font-size: 28px;
+        font-weight: 900;
+        letter-spacing: 0.2px;
+      }
+
+      /* Inputs */
+      label {
+        display: block;
+        font-weight: 600;
+        margin: 10px 0 6px;
+      }
+      input[type='text'],
+      select {
+        width: 100%;
+        background: #0b1118;
+        border: 1px solid rgba(198, 164, 106, 0.25);
+        border-radius: 12px;
+        padding: 12px 14px;
+        color: var(--text);
+      }
+
+      /* Quiz */
+      .quiz {
+        display: none;
+      }
+      .question {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--text);
+      }
+      .options {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-top: 14px;
+      }
+      .opt {
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(198, 164, 106, 0.2);
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.015);
+        color: var(--text);
+      }
+      .opt:hover {
+        background: rgba(198, 164, 106, 0.08);
+      }
+      .opt.correct {
+        border-color: rgba(126, 231, 135, 0.6);
+        background: rgba(126, 231, 135, 0.09);
+        color: var(--text);
+      }
+      .opt.wrong {
+        border-color: rgba(255, 107, 107, 0.55);
+        background: rgba(255, 107, 107, 0.07);
+        color: var(--text);
+      }
+      .explain {
+        margin-top: 10px;
+        color: var(--text);
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(198, 164, 106, 0.25);
+        background: rgba(198, 164, 106, 0.08);
+        color: var(--brand);
+        font-weight: 700;
+      }
+
+      /* Timer */
+      .timerbar {
+        height: 8px;
+        background: rgba(87, 209, 201, 0.18);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 12px;
+      }
+      .timerbar > i {
+        display: block;
+        height: 100%;
+        width: 100%;
+        background: linear-gradient(90deg, var(--accent), #69e3db);
+        transition: width 0.2s linear;
+      }
+
+      /* End Screen */
+      .end {
+        display: none;
+      }
+      .rank {
+        font-size: 22px;
+        font-weight: 900;
+      }
+
+      /* Leaderboard */
+      .board {
+        display: none;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8px;
+      }
+      th,
+      td {
+        padding: 10px 12px;
+        border-bottom: 1px solid rgba(198, 164, 106, 0.15);
+      }
+      th {
+        text-align: left;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      /* Toast */
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 24px;
+        transform: translateX(-50%);
+        background: rgba(12, 18, 24, 0.8);
+        border: 1px solid rgba(198, 164, 106, 0.3);
+        padding: 10px 14px;
+        border-radius: 12px;
+        display: none;
+      }
+
+      /* Subtle floating mascots */
+      .mascots {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .bubble {
+        position: absolute;
+        opacity: 0.07;
+        filter: blur(0.4px);
+        animation: float 12s ease-in-out infinite;
+      }
+      .bubble:nth-child(1) {
+        left: 6%;
+        top: 10%;
+        font-size: 64px;
+        animation-delay: -2s;
+      }
+      .bubble:nth-child(2) {
+        left: 80%;
+        top: 20%;
+        font-size: 48px;
+        animation-delay: -6s;
+      }
+      .bubble:nth-child(3) {
+        left: 20%;
+        bottom: 10%;
+        font-size: 56px;
+        animation-delay: -9s;
+      }
+      @keyframes float {
+        0% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-18px);
+        }
+        100% {
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="mascots" aria-hidden="true">
+      <div class="bubble">🪁</div>
+      <div class="bubble">🤖</div>
+      <div class="bubble">🪁</div>
+    </div>
+
+    <div class="container">
+      <header>
+        <div class="brand">
+          <div class="kite" aria-hidden="true">
+            <img src="logo.png" alt="Kite Logo" />
+          </div>
+          <div>
+            <h1>Are You Smarter Than a Kite?</h1>
+            <div class="tag">Test your agentic IQ. Fail gracefully.</div>
+          </div>
+        </div>
+        <nav>
+          <button class="btn secondary" id="navLearn">Learn</button>
+          <button class="btn secondary" id="navBoard">Leaderboard</button>
+        </nav>
+      </header>
+
+      <!-- START / HERO -->
+      <section id="start" class="grid">
+        <div class="card hero">
+          <div class="hero-title">
+            Welcome, test subject. Let's see if you're smarter than a Kite. 🪁
+          </div>
+          <p class="tag">
+            Unofficial, community-made quiz inspired by the agentic internet.
+          </p>
+          <div class="card" style="margin-top: 8px">
+            <label for="username">Choose a username</label>
+            <input
+              id="username"
+              type="text"
+              placeholder="e.g. IntentEnjoyer42"
+              maxlength="24"
+            />
+            <div
+              style="
+                margin-top: 14px;
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+              "
+            >
+              <button class="btn" id="startBtn">
+                <span>🚀</span> Start Quiz
+              </button>
+              <button class="btn secondary" id="randomBtn">
+                🎲 Random Name
+              </button>
+            </div>
+          </div>
+          <div style="margin-top: 6px" class="tag">
+            Tip: funny names earn no extra XP, but lots of respect.
+          </div>
+        </div>
+
+        <aside class="card">
+          <div class="pill">🧠 What is this?</div>
+          <p style="margin-top: 10px">
+            A fast 10-question quiz mixing serious Kite AI knowledge with
+            playful agent lore. After you finish, you'll receive a rank and can
+            post your score to the local leaderboard.
+          </p>
+          <ul>
+            <li>⏱️ 15 seconds per question</li>
+            <li>✅ Immediate feedback & mini explanations</li>
+            <li>🏆 Local leaderboard (saved in your browser)</li>
+          </ul>
+        </aside>
+      </section>
+
+      <!-- QUIZ -->
+      <section id="quiz" class="quiz card" role="region" aria-live="polite">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+          "
+        >
+          <div id="qMeta" class="pill">
+            Q <b id="qIndex">1</b>/<span id="qTotal">10</span> •
+            <span id="qCat">General</span>
+          </div>
+          <div class="pill" id="timerPill">
+            ⏱️ <span id="timeLeft">15</span>s
+          </div>
+        </div>
+        <div class="timerbar" aria-hidden="true"><i id="timerBar"></i></div>
+        <div style="margin-top: 16px" class="question" id="question"></div>
+        <div class="options" id="options"></div>
+        <div class="explain" id="explain"></div>
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            margin-top: 14px;
+          "
+        >
+          <div class="tag" id="scoreTag">Score: 0</div>
+          <button class="btn secondary" id="skipBtn">Skip →</button>
+        </div>
+      </section>
+
+      <!-- END / RESULTS -->
+      <section id="end" class="end card">
+        <h2 style="margin: 0 0 8px">Results</h2>
+        <div class="rank" id="rankText">You are… a Dreamer</div>
+        <p id="finalText" class="tag"></p>
+        <div
+          style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px"
+        >
+          <button class="btn" id="saveScore">💾 Save to Leaderboard</button>
+          <button class="btn secondary" id="playAgain">↻ Play Again</button>
+          <button class="btn secondary" id="viewBoard">
+            🏆 View Leaderboard
+          </button>
+        </div>
+      </section>
+
+      <!-- LEADERBOARD -->
+      <section id="board" class="board card">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
+          <h2 style="margin: 0">Leaderboard</h2>
+          <button class="btn secondary" id="clearBoard">🧹 Clear</button>
+        </div>
+        <table id="boardTable" aria-describedby="lbDesc">
+          <caption
+            id="lbDesc"
+            class="sr-only"
+            style="position: absolute; left: -9999px"
+          >
+            Top scores recorded in this browser
+          </caption>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>User</th>
+              <th>Score</th>
+              <th>Rank</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div style="margin-top: 12px">
+          <button class="btn secondary" id="backHome">← Back</button>
+        </div>
+      </section>
+
+      <!-- LEARN / ABOUT -->
+      <section id="learn" class="board card" style="display: none">
+        <h2 style="margin-top: 0">Learn About Kite (fast)</h2>
+        <ul>
+          <li>
+            <b>Agents</b> can hold wallets, call services, and coordinate
+            on-chain and off-chain.
+          </li>
+          <li>
+            <b>PoAI</b> (Proof of Attributed Intelligence) verifies who did what
+            in multi-agent workflows.
+          </li>
+          <li>
+            Services publish <b>metadata & service schema</b> so agents can
+            discover and use them.
+          </li>
+          <li>
+            Kite focuses on trust, identity, payments, and verification for the
+            agentic internet.
+          </li>
+        </ul>
+        <button class="btn secondary" id="closeLearn">Close</button>
+      </section>
+
+      <div class="toast" id="toast"></div>
+    </div>
+
+    <script>
+      // ---------- Utility ----------
+      const $ = (sel) => document.querySelector(sel);
+      const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+      const toast = (msg, ms = 1600) => {
+        const t = $('#toast');
+        t.textContent = msg;
+        t.style.display = 'block';
+        setTimeout(() => (t.style.display = 'none'), ms);
+      };
+
+      // ---------- State ----------
+      const QUESTIONS = [
+        {
+          q: 'What does PoAI stand for?',
+          cat: 'Kite Basics',
+          a: [
+            'Power of AI',
+            'Proof of Agent Intelligence',
+            'Proof of Attributed Intelligence',
+            'Proof of Awesome Ideas',
+          ],
+          correct: 2,
+          expl: 'PoAI = Proof of Attributed Intelligence. It attributes credit to the right agents in a workflow.',
+        },
+        {
+          q: 'What must services publish so agents can use them?',
+          cat: 'Kite Basics',
+          a: [
+            'API keys',
+            'DNS certificates',
+            'Metadata and service schema',
+            'CLI‑only instructions',
+          ],
+          correct: 2,
+          expl: 'Agents discover and interact with services via their metadata + service schema.',
+        },
+        {
+          q: 'Agents debating gas fees — who really wins?',
+          cat: 'Culture',
+          a: ['The solver', 'The mempool', 'The coffee vendor', 'Nobody'],
+          correct: 1,
+          expl: 'In the end, the mempool always wins 😅',
+        },
+        {
+          q: 'Which is closest to Kite’s role in AI x Web3?',
+          cat: 'Concepts',
+          a: [
+            'A social network',
+            'A trust & payments layer for agents',
+            'A photo editor',
+            'A hardware wallet only',
+          ],
+          correct: 1,
+          expl: 'Kite provides trust, identity, payments, and verification so agents can operate.',
+        },
+        {
+          q: 'An agent idles drinking coffee instead of solving intents. Which “layer” is this?',
+          cat: 'Fun',
+          a: ['Transport', 'Caffeine', 'Existential', 'Data'],
+          correct: 2,
+          expl: 'Clearly stuck in the Existential layer. Needs more coordination (or less coffee).',
+        },
+        {
+          q: 'What does an intent generally describe?',
+          cat: 'Concepts',
+          a: [
+            'Imperative steps',
+            'Random logs',
+            'Desired outcome',
+            'Network topology',
+          ],
+          correct: 2,
+          expl: 'Intents are declarative: users state the desired outcome, not the how.',
+        },
+        {
+          q: 'What’s a typical agent ability in the Kite world?',
+          cat: 'Capabilities',
+          a: [
+            'Hold wallets & transact',
+            'Teleport IRL',
+            'Smell blocks',
+            'Grow GPUs on trees',
+          ],
+          correct: 0,
+          expl: 'Agents can hold wallets, transact, and interact with services/protocols.',
+        },
+        {
+          q: 'A service without a schema is like…',
+          cat: 'Fun',
+          a: [
+            'A kite without wind',
+            'A pizza without sauce',
+            'A wallet without keys',
+            'All of the above',
+          ],
+          correct: 3,
+          expl: 'Schemas are how agents know how to use a service.',
+        },
+        {
+          q: 'PoAI primarily helps with…',
+          cat: 'Kite Basics',
+          a: [
+            'Gasless execution',
+            'Anonymous activity',
+            'Verifiable credit assignment',
+            'Agent obfuscation',
+          ],
+          correct: 2,
+          expl: 'PoAI ensures verifiable credit assignment in multi‑agent workflows.',
+        },
+        {
+          q: 'Multichain UX means…',
+          cat: 'Concepts',
+          a: [
+            'Users must pick bridges manually',
+            'Experiences abstract chain complexity',
+            'Apps run on only one chain',
+            'No wallets',
+          ],
+          correct: 1,
+          expl: 'The experience abstracts away chain details while coordinating across them.',
+        },
+        {
+          q: 'In a "Hall of Glitches" log, an agent tried to mint…',
+          cat: 'Culture',
+          a: ['Love', 'Blocks', 'Taxes', 'Wind'],
+          correct: 0,
+          expl: 'Love not found (404).',
+        },
+        {
+          q: 'Which best describes declarative programming in this context?',
+          cat: 'Concepts',
+          a: [
+            'Stating desired outcomes',
+            'Specifying step‑by‑step instructions',
+            'Drawing flowcharts only',
+            'Writing assembly',
+          ],
+          correct: 0,
+          expl: 'You say what you want; solvers/agents figure out the how.',
+        },
+      ];
+
+      const QUIZ_LEN = 10;
+      const TIME_PER = 15; // seconds per question
+
+      let quizOrder = [];
+      let idx = 0;
+      let score = 0;
+      let current = null;
+      let timer = null;
+      let timeLeft = TIME_PER;
+      let username = '';
+
+      // ---------- Views ----------
+      function show(id) {
+        ['start', 'quiz', 'end', 'board', 'learn'].forEach((v) => {
+          const el = document.getElementById(v);
+          if (!el) return;
+          if (v === id) el.style.display = v === 'quiz' ? 'block' : 'block';
+          el.style.display = v === id ? 'block' : 'none';
+        });
+      }
+
+      function startQuiz() {
+        const input = $('#username');
+        username = (input.value || '').trim() || randomName();
+        input.value = username;
+        quizOrder = shuffle([...QUESTIONS]).slice(0, QUIZ_LEN);
+        idx = 0;
+        score = 0;
+        $('#qTotal').textContent = QUIZ_LEN;
+        $('#scoreTag').textContent = `Score: ${score}`;
+        show('quiz');
+        nextQuestion();
+      }
+
+      function nextQuestion() {
+        if (idx >= quizOrder.length) {
+          return endQuiz();
+        }
+        current = quizOrder[idx];
+        $('#qIndex').textContent = idx + 1;
+        $('#qCat').textContent = current.cat;
+        $('#question').textContent = current.q;
+        const optBox = $('#options');
+        optBox.innerHTML = '';
+        current.a.forEach((text, i) => {
+          const div = document.createElement('button');
+          div.className = 'opt';
+          div.innerHTML = `<b>${String.fromCharCode(65 + i)}.</b> ${text}`;
+          div.onclick = () => choose(i, div);
+          optBox.appendChild(div);
+        });
+        $('#explain').textContent = '';
+        $('#skipBtn').disabled = false;
+        startTimer();
+      }
+
+      function startTimer() {
+        clearInterval(timer);
+        timeLeft = TIME_PER;
+        $('#timeLeft').textContent = timeLeft;
+        $('#timerBar').style.width = '100%';
+        timer = setInterval(() => {
+          timeLeft -= 1;
+          $('#timeLeft').textContent = Math.max(0, timeLeft);
+          $('#timerBar').style.width = 100 * (timeLeft / TIME_PER) + '%';
+          if (timeLeft <= 0) {
+            clearInterval(timer);
+            lockQuestion();
+            reveal(false, null, true);
+          }
+        }, 1000);
+      }
+
+      function choose(i, node) {
+        if ($('#options').classList.contains('locked')) return;
+        const correct = i === current.correct;
+        if (correct) score += 1;
+        $('#scoreTag').textContent = `Score: ${score}`;
+        lockQuestion();
+        reveal(correct, node, false);
+      }
+
+      function lockQuestion() {
+        $('#options').classList.add('locked');
+        $$('#options .opt').forEach((el, idx) => {
+          el.disabled = true;
+          if (idx === current.correct) el.classList.add('correct');
+        });
+        clearInterval(timer);
+        $('#skipBtn').disabled = true;
+      }
+
+      function reveal(correct, node, timedOut) {
+        if (node && !correct) node.classList.add('wrong');
+        $('#explain').textContent =
+          (timedOut ? 'Time! ' : correct ? 'Nice! ' : 'Not quite. ') +
+          current.expl;
+        setTimeout(() => {
+          idx += 1;
+          $('#options').classList.remove('locked');
+          nextQuestion();
+        }, 950);
+      }
+
+      function endQuiz() {
+        const rank = getRank(score);
+        $('#rankText').textContent = `You are… ${rank.emoji} ${rank.name}`;
+        $(
+          '#finalText'
+        ).textContent = `You scored ${score}/${QUIZ_LEN}. ${rank.tagline}`;
+        show('end');
+      }
+
+      function getRank(s) {
+        if (s <= 3)
+          return {
+            name: 'Sleepy Bot',
+            emoji: '💤',
+            tagline: 'Still charging neurons.',
+          };
+        if (s <= 6)
+          return {
+            name: 'Dreamer',
+            emoji: '🧠',
+            tagline: 'Understands coordination basics.',
+          };
+        if (s <= 8)
+          return {
+            name: 'Solver',
+            emoji: '⚡',
+            tagline: 'Efficient, logical, caffeinated.',
+          };
+        return {
+          name: 'Maverick',
+          emoji: '🌌',
+          tagline: 'You outsmarted the agents.',
+        };
+      }
+
+      // ---------- Leaderboard (localStorage) ----------
+      const LB_KEY = 'kite_quiz_leaderboard_v1';
+      function loadLB() {
+        try {
+          return JSON.parse(localStorage.getItem(LB_KEY) || '[]');
+        } catch (e) {
+          return [];
+        }
+      }
+      function saveLB(arr) {
+        localStorage.setItem(LB_KEY, JSON.stringify(arr));
+      }
+
+      function pushScore() {
+        const rank = getRank(score);
+        const row = {
+          user: username,
+          score,
+          rank: rank.name,
+          when: new Date().toISOString(),
+        };
+        const data = loadLB();
+        data.push(row);
+        data.sort(
+          (a, b) => b.score - a.score || new Date(b.when) - new Date(a.when)
+        );
+        saveLB(data.slice(0, 50));
+        toast('Saved to leaderboard');
+        renderLB();
+        show('board');
+      }
+
+      function renderLB() {
+        const tbody = $('#boardTable tbody');
+        const data = loadLB();
+        tbody.innerHTML = '';
+        data.slice(0, 20).forEach((r, i) => {
+          const tr = document.createElement('tr');
+          const d = new Date(r.when);
+          tr.innerHTML = `<td>${i + 1}</td><td>${escapeHtml(r.user)}</td><td>${
+            r.score
+          }</td><td>${r.rank}</td><td>${d.toLocaleString()}</td>`;
+          tbody.appendChild(tr);
+        });
+      }
+
+      // ---------- Helpers ----------
+      function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+      function randomName() {
+        const a = [
+          'Intent',
+          'Solver',
+          'Mempool',
+          'Shrimp',
+          'Agent',
+          'Dreamer',
+          'Chaos',
+          'Coord',
+          'Kite',
+        ];
+        const b = [
+          'Enjoyer',
+          'Wizard',
+          'Rider',
+          'Pilot',
+          'Nerd',
+          'Seeker',
+          'Maverick',
+          'Bee',
+          'Ghost',
+        ];
+        return (
+          a[Math.floor(Math.random() * a.length)] +
+          b[Math.floor(Math.random() * b.length)] +
+          Math.floor(Math.random() * 999)
+        );
+      }
+      function escapeHtml(s) {
+        return s.replace(
+          /[&<>"]+/g,
+          (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])
+        );
+      }
+
+      // ---------- Events ----------
+      $('#startBtn').onclick = startQuiz;
+      $('#randomBtn').onclick = () => {
+        $('#username').value = randomName();
+      };
+      $('#skipBtn').onclick = () => {
+        lockQuestion();
+        reveal(false, null, false);
+      };
+      $('#saveScore').onclick = pushScore;
+      $('#playAgain').onclick = () => {
+        show('start');
+      };
+      $('#viewBoard').onclick = () => {
+        renderLB();
+        show('board');
+      };
+      $('#navBoard').onclick = () => {
+        renderLB();
+        show('board');
+      };
+      $('#backHome').onclick = () => {
+        show('start');
+      };
+      $('#clearBoard').onclick = () => {
+        localStorage.removeItem(LB_KEY);
+        renderLB();
+        toast('Leaderboard cleared');
+      };
+      $('#navLearn').onclick = () => {
+        show('learn');
+      };
+      $('#closeLearn').onclick = () => {
+        show('start');
+      };
+
+      // Focus username on load
+      window.addEventListener('load', () => {
+        $('#username').focus();
+      });
+    </script>
+  </body>
+</html>
